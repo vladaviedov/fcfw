@@ -3,11 +3,12 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "io.h"
+
 int main(void) {
-	DDRB |= (1 << PB0);
+	io_init();
 
 	while (1) {
-		PORTB ^= (1 << PB0);
 		_delay_ms(500);
 	}
 }

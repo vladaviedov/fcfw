@@ -1,6 +1,6 @@
 #pragma once
 
-#include <avr/io.h>
+#include <stdint.h>
 
 typedef enum {
 	MP_A,

@@ -1,7 +1,5 @@
 #include "pins.h"
 
-#include <avr/io.h>
-
 const pin pin_io_hold_btn = { .port = MP_A, .bit = 0 };
 const pin pin_io_div_a = { .port = MP_A, .bit = 1 };
 const pin pin_io_div_b = { .port = MP_A, .bit = 2 };
