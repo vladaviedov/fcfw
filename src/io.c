@@ -9,6 +9,7 @@ typedef enum {
 	PM_OUT,
 } pin_mode;
 
+static volatile uint8_t *port_addr(mcu_port port);
 static void set_pin_mode(const pin *p, pin_mode mode);
 
 void io_init(void) {
@@ -35,28 +36,42 @@ void io_init(void) {
 	set_pin_mode(&pin_disp_scl, PM_IN);
 }
 
-static void set_pin_mode(const pin *p, pin_mode mode) {
-	uint8_t mask = 1 << p->bit;
-	volatile uint8_t *port;
+logic io_pin_read(const pin *p) {
+	uint8_t mask = 1u << p->bit;
+	volatile uint8_t *port = port_addr(p->port);
 
-	switch (p->port) {
-	case MP_A:
-		port = &DDRA;
-		break;
-	case MP_B:
-		port = &DDRB;
-		break;
-	case MP_C:
-		port = &DDRC;
-		break;
-	}
+	return (*port & mask) ? L_HIGH : L_LOW;
+}
 
-	switch (mode) {
-	case PM_IN:
-		*port &= ~(mask);
-		break;
-	case PM_OUT:
+void io_pin_write(const pin *p, logic data) {
+	uint8_t mask = 1u << p->bit;
+	volatile uint8_t *port = port_addr(p->port);
+	
+	if (data == L_HIGH) {
 		*port |= mask;
-		break;
+	} else {
+		*port &= ~mask;
+	}
+}
+
+static volatile uint8_t *port_addr(mcu_port port) {
+	switch (port) {
+	case MP_A:
+		return &DDRA;
+	case MP_B:
+		return &DDRB;
+	case MP_C:
+		return &DDRC;
+	}
+}
+
+static void set_pin_mode(const pin *p, pin_mode mode) {
+	uint8_t mask = 1u << p->bit;
+	volatile uint8_t *port = port_addr(p->port);
+
+	if (mode == PM_OUT) {
+		*port |= mask;
+	} else {
+		*port &= ~mask;
 	}
 }
