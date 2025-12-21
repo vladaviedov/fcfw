@@ -26,7 +26,7 @@ void io_init(void) {
 	set_pin_mode(&pin_ctr_reset, PM_OUT);
 
 	set_pin_mode(&pin_ref_reset, PM_OUT);
-	set_pin_mode(&pin_ref_div0, PM_OUT);
+	// set_pin_mode(&pin_ref_div0, PM_OUT);
 	set_pin_mode(&pin_ref_div1, PM_OUT);
 	set_pin_mode(&pin_ref_div2, PM_OUT);
 	set_pin_mode(&pin_ref_trig, PM_IN);
@@ -57,17 +57,29 @@ void io_pin_write(const pin *p, logic data) {
 static volatile uint8_t *port_addr(mcu_port port) {
 	switch (port) {
 	case MP_A:
-		return &DDRA;
+		return &PORTA;
 	case MP_B:
-		return &DDRB;
+		return &PORTB;
 	case MP_C:
-		return &DDRC;
+		return &PORTC;
 	}
 }
 
 static void set_pin_mode(const pin *p, pin_mode mode) {
 	uint8_t mask = 1u << p->bit;
-	volatile uint8_t *port = port_addr(p->port);
+	volatile uint8_t *port;
+
+	switch (p->port) {
+	case MP_A:
+		port = &DDRA;
+		break;
+	case MP_B:
+		port = &DDRB;
+		break;
+	case MP_C:
+		port = &DDRC;
+		break;
+	}
 
 	if (mode == PM_OUT) {
 		*port |= mask;
