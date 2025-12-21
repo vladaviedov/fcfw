@@ -5,7 +5,8 @@ export VERSION="0.1"
 
 export TOOLCHAIN_ROOT=$${HOME}/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7
 
-export CC=$(TOOLCHAIN_ROOT)/bin/avr-gcc
+export CC=$(TOOLCHAIN_ROOT)/bin/avr-gcc -mmcu=attiny1634
+export OBJCOPY=$(TOOLCHAIN_ROOT)/bin/avr-objcopy
 export CFLAGS=-std=c99 \
 	-I$(BUILD)/include \
 	-I$(TOOLCHAIN_ROOT)/avr/include \

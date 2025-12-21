@@ -3,7 +3,8 @@ BUILD_DIRS=$(BUILD) \
 		   $(BUILD)/bin \
 		   $(OBJ_DIR)
 
-TARGET=$(BUILD)/bin/fcfw
+ELF_TARGET=$(BUILD)/bin/fcfw.elf
+HEX_TARGET=$(BUILD)/bin/fcfw.hex
 
 SUBDIRS=$(shell cd $(PWD)/src && find * -type d)
 MKSUBDIRS=$(addprefix $(OBJ_DIR)/, $(SUBDIRS))
@@ -11,7 +12,7 @@ SRCS=$(shell cd $(PWD)/src && find * -type f -name '*.c')
 OBJS=$(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 .PHONY: build
-build: $(BUILD_DIRS) $(TARGET)
+build: $(BUILD_DIRS) $(HEX_TARGET)
 
 # Templates
 define make_build_dir
@@ -33,7 +34,10 @@ endef
 $(foreach build_dir, $(BUILD_DIRS), \
 	$(eval $(call make_build_dir,$(build_dir))))
 
-$(TARGET): $(BUILD) $(OBJS)
+$(HEX_TARGET): $(ELF_TARGET)
+	$(OBJCOPY) -O ihex $^ $@
+
+$(ELF_TARGET): $(BUILD) $(OBJS)
 	$(CC) -o $@ $(OBJS) $(LDFLAGS)
 
 # Build root
