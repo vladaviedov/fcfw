@@ -11,7 +11,8 @@ export CFLAGS=-std=c99 \
 	-I$(BUILD)/include \
 	-I$(TOOLCHAIN_ROOT)/avr/include \
 	-DFCFW_VERSION=$(VERSION) \
-	-D__AVR_ATtiny1634__
+	-D__AVR_ATtiny1634__ \
+	-DF_CPU=8000000UL
 export CFLAGS_RELEASE=-O2 -w
 export CFLAGS_DEBUG=-Wall -Wextra -g -DDEBUG=1
 export LDFLAGS=

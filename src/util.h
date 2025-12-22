@@ -5,10 +5,6 @@ typedef enum {
 	L_HIGH = 1,
 } logic;
 
-// Clock speed definition
-#define F_CPU 8000000UL
-
-// delay_*s can now be used safely
 #define delay_us _delay_us
 #define delay_ms _delay_ms
 
