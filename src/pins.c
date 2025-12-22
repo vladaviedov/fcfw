@@ -13,7 +13,7 @@ const pin pin_s_load = { .port = MP_A, .bit = 6 };
 const pin pin_ctr_reset = { .port = MP_A, .bit = 7 };
 
 const pin pin_ref_reset = { .port = MP_B, .bit = 0 };
-const pin pin_ref_div0 = { .port = MP_C, .bit = 3 };
+// const pin pin_ref_div0 = { .port = MP_C, .bit = 3 };
 const pin pin_ref_div1 = { .port = MP_C, .bit = 4 };
 const pin pin_ref_div2 = { .port = MP_C, .bit = 5 };
 const pin pin_ref_trig = { .port = MP_C, .bit = 0 };

@@ -30,7 +30,7 @@ extern const pin pin_ctr_reset;
 
 // Time reference
 extern const pin pin_ref_reset;
-extern const pin pin_ref_div0;
+// extern const pin pin_ref_div0;
 extern const pin pin_ref_div1;
 extern const pin pin_ref_div2;
 extern const pin pin_ref_trig;
