@@ -1,16 +1,53 @@
+/**
+ * @file io.c
+ * @author Vladyslav Aviedov <vladaviedov at protonmail dot com>
+ * @version dev
+ * @date 2025
+ * @license GPLv3.0
+ * @brief External I/O.
+ */
 #include "io.h"
+
+#include <avr/io.h>
 
 #include "pins.h"
 #include "util.h"
 
-#include <avr/io.h>
-
+/**
+ * @enum pin_config
+ * Pin configuration.
+ *
+ * @var pin_config::PC_INPUT
+ * Configure pin as an input.
+ *
+ * @var pin_config::PC_INPUT_PU
+ * Configure pin as an input (with pull-up).
+ *
+ * @var pin_config::PC_OUTPUT
+ * Configure pin as an output.
+ */
 typedef enum {
 	PC_INPUT,
 	PC_INPUT_PU,
 	PC_OUTPUT,
 } pin_config;
 
+/**
+ * @enum reg_type
+ * Register type.
+ *
+ * @var reg_type::RT_PUE
+ * Pull-up resistor register.
+ *
+ * @var reg_type::RT_PORT
+ * Data (output) register.
+ *
+ * @var reg_type::RT_DDR
+ * Data direction register.
+ *
+ * @var reg_type::RT_PIN
+ * Input register.
+ */
 typedef enum {
 	RT_PUE,
 	RT_PORT,
@@ -55,6 +92,13 @@ void io_pin_write(const pin *p, logic data) {
 	bitset(*port, p->bit, data);
 }
 
+/**
+ * @brief Get memory address of I/O register.
+ *
+ * @param[in] port - Port selection.
+ * @param[in] reg - Register selection.
+ * @return Address of the port + register type combination.
+ */
 static volatile uint8_t *get_addr(mcu_port port, reg_type reg) {
 	switch (port) {
 	case MP_A:
@@ -93,6 +137,12 @@ static volatile uint8_t *get_addr(mcu_port port, reg_type reg) {
 	}
 }
 
+/**
+ * @brief Set I/O pin mode.
+ *
+ * @param[in] p - I/O pin.
+ * @param[in] mode - Pin configuration mode.
+ */
 static void set_pin_mode(const pin *p, pin_config mode) {
 	volatile uint8_t *ddr = get_addr(p->port, RT_DDR);
 	volatile uint8_t *pue = get_addr(p->port, RT_PUE);
