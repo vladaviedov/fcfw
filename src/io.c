@@ -5,8 +5,8 @@
 #include <avr/io.h>
 
 typedef enum {
-	PM_IN,
-	PM_OUT,
+	PM_IN = 0,
+	PM_OUT = 1,
 } pin_mode;
 
 static volatile uint8_t *port_addr(mcu_port port);
@@ -37,21 +37,13 @@ void io_init(void) {
 }
 
 logic io_pin_read(const pin *p) {
-	uint8_t mask = 1u << p->bit;
 	volatile uint8_t *port = port_addr(p->port);
-
-	return (*port & mask) ? L_HIGH : L_LOW;
+	return bitget(*port, p->bit);
 }
 
 void io_pin_write(const pin *p, logic data) {
-	uint8_t mask = 1u << p->bit;
 	volatile uint8_t *port = port_addr(p->port);
-	
-	if (data == L_HIGH) {
-		*port |= mask;
-	} else {
-		*port &= ~mask;
-	}
+	bitset(*port, p->bit, data);
 }
 
 static volatile uint8_t *port_addr(mcu_port port) {
@@ -66,7 +58,6 @@ static volatile uint8_t *port_addr(mcu_port port) {
 }
 
 static void set_pin_mode(const pin *p, pin_mode mode) {
-	uint8_t mask = 1u << p->bit;
 	volatile uint8_t *port;
 
 	switch (p->port) {
@@ -81,9 +72,5 @@ static void set_pin_mode(const pin *p, pin_mode mode) {
 		break;
 	}
 
-	if (mode == PM_OUT) {
-		*port |= mask;
-	} else {
-		*port &= ~mask;
-	}
+	bitset(*port, p->bit, (logic)mode);
 }

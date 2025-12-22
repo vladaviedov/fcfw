@@ -1,11 +1,7 @@
 #pragma once
 
 #include "pins.h"
-
-typedef enum {
-	L_HIGH,
-	L_LOW,
-} logic;
+#include "util.h"
 
 void io_init(void);
 logic io_pin_read(const pin *p);
