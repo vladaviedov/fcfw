@@ -9,6 +9,7 @@
 #include "io.h"
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
 #include "pins.h"
 #include "util.h"
@@ -53,12 +54,34 @@ typedef enum {
 	RT_PORT,
 	RT_DDR,
 	RT_PIN,
+	RT_PCMSK,
 } reg_type;
 
+static void init_pin_mode(void);
+static void init_interrupts(void);
 static volatile uint8_t *get_addr(mcu_port port, reg_type reg);
 static void set_pin_mode(const pin *p, pin_config mode);
+static void enable_interrupt(const pin *p);
 
-void io_init(void) {
+void io_init() {
+	init_pin_mode();
+	init_interrupts();
+}
+
+logic io_pin_read(const pin *p) {
+	volatile uint8_t *port = get_addr(p->port, RT_PIN);
+	return bitget(*port, p->bit);
+}
+
+void io_pin_write(const pin *p, logic data) {
+	volatile uint8_t *port = get_addr(p->port, RT_PORT);
+	bitset(*port, p->bit, data);
+}
+
+/**
+ * @brief Initialize pin directions & pull-ups.
+ */
+static void init_pin_mode(void) {
 	set_pin_mode(&pin_io_hold_btn, PC_INPUT_PU);
 	set_pin_mode(&pin_io_div_a, PC_INPUT_PU);
 	set_pin_mode(&pin_io_div_b, PC_INPUT_PU);
@@ -82,14 +105,19 @@ void io_init(void) {
 	set_pin_mode(&pin_disp_scl, PC_INPUT);
 }
 
-logic io_pin_read(const pin *p) {
-	volatile uint8_t *port = get_addr(p->port, RT_PIN);
-	return bitget(*port, p->bit);
-}
+/**
+ * @brief Initialize I/O interrupts.
+ */
+static void init_interrupts(void) {
+	// Enable Port A & C interrupts
+	bitset(GIMSK, PCIE0, L_HIGH);
+	bitset(GIMSK, PCIE2, L_HIGH);
 
-void io_pin_write(const pin *p, logic data) {
-	volatile uint8_t *port = get_addr(p->port, RT_PORT);
-	bitset(*port, p->bit, data);
+	enable_interrupt(&pin_io_hold_btn);
+	enable_interrupt(&pin_io_div_a);
+	enable_interrupt(&pin_ref_trig);
+
+	sei();
 }
 
 /**
@@ -111,6 +139,8 @@ static volatile uint8_t *get_addr(mcu_port port, reg_type reg) {
 			return &DDRA;
 		case RT_PIN:
 			return &PINA;
+		case RT_PCMSK:
+			return &PCMSK0;
 		}
 	case MP_B:
 		switch (reg) {
@@ -122,6 +152,8 @@ static volatile uint8_t *get_addr(mcu_port port, reg_type reg) {
 			return &DDRB;
 		case RT_PIN:
 			return &PINB;
+		case RT_PCMSK:
+			return &PCMSK1;
 		}
 	case MP_C:
 		switch (reg) {
@@ -133,6 +165,8 @@ static volatile uint8_t *get_addr(mcu_port port, reg_type reg) {
 			return &DDRC;
 		case RT_PIN:
 			return &PINC;
+		case RT_PCMSK:
+			return &PCMSK2;
 		}
 	}
 }
@@ -161,4 +195,14 @@ static void set_pin_mode(const pin *p, pin_config mode) {
 		bitset(*ddr, p->bit, L_HIGH);
 		break;
 	}
+}
+
+/**
+ * @brief Enable interrupt on an pin.
+ *
+ * @param[in] p - I/O pin.
+ */
+static void enable_interrupt(const pin *p) {
+	volatile uint8_t *mask = get_addr(p->port, RT_PCMSK);
+	bitset(*mask, p->bit, L_HIGH);
 }
