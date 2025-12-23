@@ -8,30 +8,11 @@
  */
 #include "io.h"
 
-#include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/io.h>
 
 #include "pins.h"
 #include "util.h"
-
-/**
- * @enum pin_config
- * Pin configuration.
- *
- * @var pin_config::PC_INPUT
- * Configure pin as an input.
- *
- * @var pin_config::PC_INPUT_PU
- * Configure pin as an input (with pull-up).
- *
- * @var pin_config::PC_OUTPUT
- * Configure pin as an output.
- */
-typedef enum {
-	PC_INPUT,
-	PC_INPUT_PU,
-	PC_OUTPUT,
-} pin_config;
 
 /**
  * @enum reg_type
@@ -60,12 +41,31 @@ typedef enum {
 static void init_pin_mode(void);
 static void init_interrupts(void);
 static volatile uint8_t *get_addr(mcu_port port, reg_type reg);
-static void set_pin_mode(const pin *p, pin_config mode);
 static void enable_interrupt(const pin *p);
 
 void io_init() {
 	init_pin_mode();
 	init_interrupts();
+}
+
+void io_pin_mode(const pin *p, pin_config mode) {
+	volatile uint8_t *ddr = get_addr(p->port, RT_DDR);
+	volatile uint8_t *pue = get_addr(p->port, RT_PUE);
+
+	switch (mode) {
+	case PC_INPUT_PU:
+		bitset(*pue, p->bit, L_HIGH);
+		bitset(*ddr, p->bit, L_LOW);
+		break;
+	case PC_INPUT:
+		bitset(*pue, p->bit, L_LOW);
+		bitset(*ddr, p->bit, L_LOW);
+		break;
+	case PC_OUTPUT:
+		bitset(*pue, p->bit, L_LOW);
+		bitset(*ddr, p->bit, L_HIGH);
+		break;
+	}
 }
 
 logic io_pin_read(const pin *p) {
@@ -82,27 +82,27 @@ void io_pin_write(const pin *p, logic data) {
  * @brief Initialize pin directions & pull-ups.
  */
 static void init_pin_mode(void) {
-	set_pin_mode(&pin_io_hold_btn, PC_INPUT_PU);
-	set_pin_mode(&pin_io_div_a, PC_INPUT_PU);
-	set_pin_mode(&pin_io_div_b, PC_INPUT_PU);
-	set_pin_mode(&pin_io_hold_led, PC_OUTPUT);
-	set_pin_mode(&pin_io_acq_led, PC_OUTPUT);
+	io_pin_mode(&pin_io_hold_btn, PC_INPUT_PU);
+	io_pin_mode(&pin_io_div_a, PC_INPUT_PU);
+	io_pin_mode(&pin_io_div_b, PC_INPUT_PU);
+	io_pin_mode(&pin_io_hold_led, PC_OUTPUT);
+	io_pin_mode(&pin_io_acq_led, PC_OUTPUT);
 
-	set_pin_mode(&pin_s_data, PC_INPUT);
-	set_pin_mode(&pin_s_clk, PC_OUTPUT);
-	set_pin_mode(&pin_s_load, PC_OUTPUT);
+	io_pin_mode(&pin_s_data, PC_INPUT);
+	io_pin_mode(&pin_s_clk, PC_OUTPUT);
+	io_pin_mode(&pin_s_load, PC_OUTPUT);
 
-	set_pin_mode(&pin_ctr_reset, PC_OUTPUT);
+	io_pin_mode(&pin_ctr_reset, PC_OUTPUT);
 
-	set_pin_mode(&pin_ref_reset, PC_OUTPUT);
-	// set_pin_mode(&pin_ref_div0, PC_OUTPUT);
-	set_pin_mode(&pin_ref_div1, PC_OUTPUT);
-	set_pin_mode(&pin_ref_div2, PC_OUTPUT);
-	set_pin_mode(&pin_ref_trig, PC_INPUT_PU);
+	io_pin_mode(&pin_ref_reset, PC_OUTPUT);
+	// io_pin_mode(&pin_ref_div0, PC_OUTPUT);
+	io_pin_mode(&pin_ref_div1, PC_OUTPUT);
+	io_pin_mode(&pin_ref_div2, PC_OUTPUT);
+	io_pin_mode(&pin_ref_trig, PC_INPUT_PU);
 
 	// Is correct?
-	set_pin_mode(&pin_disp_sda, PC_INPUT);
-	set_pin_mode(&pin_disp_scl, PC_INPUT);
+	io_pin_mode(&pin_disp_sda, PC_OUTPUT);
+	io_pin_mode(&pin_disp_scl, PC_INPUT);
 }
 
 /**
@@ -168,32 +168,6 @@ static volatile uint8_t *get_addr(mcu_port port, reg_type reg) {
 		case RT_PCMSK:
 			return &PCMSK2;
 		}
-	}
-}
-
-/**
- * @brief Set I/O pin mode.
- *
- * @param[in] p - I/O pin.
- * @param[in] mode - Pin configuration mode.
- */
-static void set_pin_mode(const pin *p, pin_config mode) {
-	volatile uint8_t *ddr = get_addr(p->port, RT_DDR);
-	volatile uint8_t *pue = get_addr(p->port, RT_PUE);
-
-	switch (mode) {
-	case PC_INPUT_PU:
-		bitset(*pue, p->bit, L_HIGH);
-		bitset(*ddr, p->bit, L_LOW);
-		break;
-	case PC_INPUT:
-		bitset(*pue, p->bit, L_LOW);
-		bitset(*ddr, p->bit, L_LOW);
-		break;
-	case PC_OUTPUT:
-		bitset(*pue, p->bit, L_LOW);
-		bitset(*ddr, p->bit, L_HIGH);
-		break;
 	}
 }
 
