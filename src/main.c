@@ -1,3 +1,10 @@
+/**
+ * @file main.c
+ * @author Vladyslav Aviedov <vladaviedov at protonmail dot com>
+ * @version dev
+ * @date 2025
+ * @license GPLv3.0
+ */
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>

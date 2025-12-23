@@ -1,3 +1,11 @@
+/**
+ * @file pins.c
+ * @author Vladyslav Aviedov <vladaviedov at protonmail dot com>
+ * @version dev
+ * @date 2025
+ * @license GPLv3.0
+ * @brief Frequency counter MCU pinout.
+ */
 #include "pins.h"
 
 const pin pin_io_hold_btn = { .port = MP_A, .bit = 0 };

@@ -1,3 +1,11 @@
+/**
+ * @file meas.c
+ * @author Vladyslav Aviedov <vladaviedov at protonmail dot com>
+ * @version dev
+ * @date 2025
+ * @license GPLv3.0
+ * @brief Frequency counter measurement unit driver.
+ */
 #include "meas.h"
 
 #include <util/delay.h>

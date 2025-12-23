@@ -1,13 +1,44 @@
+/**
+ * @file pins.h
+ * @author Vladyslav Aviedov <vladaviedov at protonmail dot com>
+ * @version dev
+ * @date 2025
+ * @license GPLv3.0
+ * @brief Frequency counter MCU pinout.
+ */
 #pragma once
 
 #include <stdint.h>
 
+/**
+ * @enum mcu_port
+ * Internal MCU I/O group.
+ *
+ * @var mcu_port::MP_A
+ * Port A (PA0-PA7)
+ *
+ * @var mcu_port::MP_B
+ * Port B (PB0-PB3)
+ *
+ * @var mcu_port::MP_C
+ * Port B (PC0-PC5)
+ */
 typedef enum {
 	MP_A,
 	MP_B,
 	MP_C,
 } mcu_port;
 
+/**
+ * @struct pin
+ * Hardware pin definition.
+ *
+ * @var pin::port
+ * Internal MCU port.
+ *
+ * @var pin::bit
+ * Index inside of the port.
+ */
 typedef struct {
 	mcu_port port;
 	uint8_t bit;
