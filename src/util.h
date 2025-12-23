@@ -9,5 +9,5 @@ typedef enum {
 #define delay_ms _delay_ms
 
 // Bit manipulations
-#define bitget(x, i) ((x & (1u << i)) ? L_HIGH : L_LOW)
-#define bitset(x, i, val) (val ? (x |= (1u << i)) : (x &= ~(1u << i)))
+#define bitget(x, i) (((x) & (1u << (i))) ? L_HIGH : L_LOW)
+#define bitset(x, i, val) ((val) ? ((x) |= (1u << (i))) : ((x) &= ~(1u << (i))))
