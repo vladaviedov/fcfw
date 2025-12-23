@@ -63,6 +63,7 @@ void meas_capture(void) {
 
 uint32_t meas_load(void) {
 	uint32_t data = 0;
+	uint8_t fresh_old = fresh;
 
 	for (uint8_t i = 0; i < 32; i++) {
 		uint32_t bit = (uint32_t)io_pin_read(&pin_s_data);
@@ -86,5 +87,5 @@ uint32_t meas_load(void) {
 	correction = data & 0b11;
 	fresh = 1;
 
-	return result;
+	return fresh_old ? result : 0;
 }
