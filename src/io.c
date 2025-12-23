@@ -100,9 +100,12 @@ static void init_pin_mode(void) {
 	io_pin_mode(&pin_ref_div2, PC_OUTPUT);
 	io_pin_mode(&pin_ref_trig, PC_INPUT_PU);
 
-	// Is correct?
-	io_pin_mode(&pin_disp_sda, PC_OUTPUT);
+	// I2C lines are released, external pull-up
+	io_pin_mode(&pin_disp_sda, PC_INPUT);
 	io_pin_mode(&pin_disp_scl, PC_INPUT);
+	// Ensure that I2C ports are programmed to output LOW when set as output
+	io_pin_write(&pin_disp_sda, L_LOW);
+	io_pin_write(&pin_disp_scl, L_LOW);
 }
 
 /**
