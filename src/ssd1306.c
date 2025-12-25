@@ -20,10 +20,26 @@
 #define CTRL_BYTE 0x00
 #define DATA_BYTE 0x40
 
+#define CMD_MUX_RATIO 0xa8
+#define CMD_DISP_OFFSET 0xd3
+#define CMD_DISP_START_LINE 0x40
+#define CMD_INVERT_X 0xa1
+#define CMD_INVERT_Y 0xc8
+#define CMD_COM_CONFIG 0xda
+#define CMD_CONTRAST_SET 0x81
 #define CMD_CHG_PUMP_SET 0x8d
-#define CMD_CHG_PUMP_ENABLE 0x14
+#define CMD_DISP_RAM 0xa4
+#define CMD_DISP_NORMAL 0xa6
+#define CMD_OSC_SET 0xd5
+#define CMD_MEM_ADDR_SET 0x20
 #define CMD_DISP_OFF 0xae
 #define CMD_DISP_ON 0xaf
+#define CMD_COL_SET 0x21
+#define CMD_PAGE_SET 0x22
+
+#define VAL_CHG_PUMP_ENABLE 0x14
+#define VAL_COM_DEFAULT 0x12
+#define VAL_MEM_ADDR_PAGE 0x00
 
 static logic send_cmd(uint8_t command);
 static logic send_page(const uint8_t *data);
@@ -31,36 +47,37 @@ static void render_num(uint8_t *buf, uint8_t num);
 
 logic ssd1306_init(void) {
 	if (
-		!send_cmd(0xa8) ||
+		!send_cmd(CMD_MUX_RATIO) ||
 		!send_cmd(0x3f) ||
-		!send_cmd(0xd3) ||
+		!send_cmd(CMD_DISP_OFFSET) ||
 		!send_cmd(0x00) ||
-		!send_cmd(0x40) ||
-		!send_cmd(0xa1) ||
-		!send_cmd(0xc8) ||
-		!send_cmd(0xda) ||
-		!send_cmd(0x12) ||
-		!send_cmd(0x81) ||
+		!send_cmd(CMD_DISP_START_LINE) ||
+		!send_cmd(CMD_INVERT_X) ||
+		!send_cmd(CMD_INVERT_Y) ||
+		!send_cmd(CMD_COM_CONFIG) ||
+		!send_cmd(VAL_COM_DEFAULT) ||
+		!send_cmd(CMD_CONTRAST_SET) ||
 		!send_cmd(0x7f) ||
-		!send_cmd(0xa4) ||
-		!send_cmd(0xa6) ||
-		!send_cmd(0xd5) ||
+		!send_cmd(CMD_DISP_RAM) ||
+		!send_cmd(CMD_DISP_NORMAL) ||
+		!send_cmd(CMD_OSC_SET) ||
 		!send_cmd(0x80) ||
-		!send_cmd(0x20) ||
-		!send_cmd(0x00) ||
+		!send_cmd(CMD_MEM_ADDR_SET) ||
+		!send_cmd(VAL_MEM_ADDR_PAGE) ||
 		!send_cmd(CMD_CHG_PUMP_SET) ||
-		!send_cmd(CMD_CHG_PUMP_ENABLE) ||
+		!send_cmd(VAL_CHG_PUMP_ENABLE) ||
 		!send_cmd(CMD_DISP_ON)) {
 		return L_LOW;
 	}
 
-	send_cmd(0x21);
-	send_cmd(0x00);
-	send_cmd(0x7f);
+	// Use entire display for auto-increment
+	send_cmd(CMD_COL_SET);
+	send_cmd(0x00); // start
+	send_cmd(0x7f); // end
 
-	send_cmd(0x22);
-	send_cmd(0x00);
-	send_cmd(0x07);
+	send_cmd(CMD_PAGE_SET);
+	send_cmd(0x00); // start
+	send_cmd(0x07); // end
 
 	return L_HIGH;
 }
