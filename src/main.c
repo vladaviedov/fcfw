@@ -13,6 +13,7 @@
 #include "meas.h"
 #include "pins.h"
 #include "util.h"
+#include "ssd1306.h"
 
 static volatile uint8_t trig_flag = 0;
 static volatile uint8_t hold_btn_flag = 0;
@@ -28,6 +29,22 @@ int main(void) {
 	io_pin_write(&pin_io_acq_led, L_HIGH);
 	io_pin_write(&pin_io_hold_led, L_LOW);
 
+	if (!ssd1306_init()) {
+		uint8_t flag = 0;
+		while (1) {
+			if (flag) {
+				io_pin_write(&pin_io_acq_led, L_HIGH);
+				io_pin_write(&pin_io_hold_led, L_HIGH);
+			} else {
+				io_pin_write(&pin_io_acq_led, L_LOW);
+				io_pin_write(&pin_io_hold_led, L_LOW);
+			}
+			flag = !flag;
+			delay_ms(100);
+		}
+	}
+
+	ssd1306_render_result(0);
 	while (1) {
 		if (hold_btn_flag) {
 			if (!io_pin_read(&pin_io_hold_btn)) {
@@ -54,13 +71,13 @@ int main(void) {
 
 		if (trig_flag) {
 			trig_flag = 0;
-			if (hold_btn_flag) {
+			if (hold_state) {
 				continue;
 			}
 
 			meas_capture();
 			uint32_t result = meas_load();
-			// TODO: use result
+			ssd1306_render_result(result);
 		}
 	}
 }
