@@ -1,7 +1,7 @@
 /**
  * @file ssd1306.c
  * @author Vladyslav Aviedov <vladaviedov at protonmail dot com>
- * @version dev
+ * @version 1.0.0
  * @date 2025
  * @license GPLv3.0
  * @brief SSD1306 driver (I2C).
@@ -10,8 +10,8 @@
 
 #include <string.h>
 
-#include "util.h"
 #include "i2c.h"
+#include "util.h"
 
 #define I2C_ADDR 0x3c
 
@@ -46,27 +46,16 @@ static logic send_page(const uint8_t *data);
 static void render_num(uint8_t *buf, uint8_t num);
 
 logic ssd1306_init(void) {
-	if (
-		!send_cmd(CMD_MUX_RATIO) ||
-		!send_cmd(0x3f) ||
-		!send_cmd(CMD_DISP_OFFSET) ||
-		!send_cmd(0x00) ||
-		!send_cmd(CMD_DISP_START_LINE) ||
-		!send_cmd(CMD_INVERT_X) ||
-		!send_cmd(CMD_INVERT_Y) ||
-		!send_cmd(CMD_COM_CONFIG) ||
-		!send_cmd(VAL_COM_DEFAULT) ||
-		!send_cmd(CMD_CONTRAST_SET) ||
-		!send_cmd(0x7f) ||
-		!send_cmd(CMD_DISP_RAM) ||
-		!send_cmd(CMD_DISP_NORMAL) ||
-		!send_cmd(CMD_OSC_SET) ||
-		!send_cmd(0x80) ||
-		!send_cmd(CMD_MEM_ADDR_SET) ||
-		!send_cmd(VAL_MEM_ADDR_PAGE) ||
-		!send_cmd(CMD_CHG_PUMP_SET) ||
-		!send_cmd(VAL_CHG_PUMP_ENABLE) ||
-		!send_cmd(CMD_DISP_ON)) {
+	if (!send_cmd(CMD_MUX_RATIO) || !send_cmd(0x3f)
+		|| !send_cmd(CMD_DISP_OFFSET) || !send_cmd(0x00)
+		|| !send_cmd(CMD_DISP_START_LINE) || !send_cmd(CMD_INVERT_X)
+		|| !send_cmd(CMD_INVERT_Y) || !send_cmd(CMD_COM_CONFIG)
+		|| !send_cmd(VAL_COM_DEFAULT) || !send_cmd(CMD_CONTRAST_SET)
+		|| !send_cmd(0x7f) || !send_cmd(CMD_DISP_RAM)
+		|| !send_cmd(CMD_DISP_NORMAL) || !send_cmd(CMD_OSC_SET)
+		|| !send_cmd(0x80) || !send_cmd(CMD_MEM_ADDR_SET)
+		|| !send_cmd(VAL_MEM_ADDR_PAGE) || !send_cmd(CMD_CHG_PUMP_SET)
+		|| !send_cmd(VAL_CHG_PUMP_ENABLE) || !send_cmd(CMD_DISP_ON)) {
 		return L_LOW;
 	}
 
@@ -116,10 +105,8 @@ void ssd1306_render_result(uint32_t data) {
 static logic send_cmd(uint8_t command) {
 	i2c_start();
 
-	if (!i2c_write(i2c_addr_wr(I2C_ADDR)) ||
-		!i2c_write(CTRL_BYTE) ||
-		!i2c_write(command)) {
-
+	if (!i2c_write(i2c_addr_wr(I2C_ADDR)) || !i2c_write(CTRL_BYTE)
+		|| !i2c_write(command)) {
 		i2c_stop();
 		return L_LOW;
 	}
@@ -215,5 +202,5 @@ static void render_num(uint8_t *buf, uint8_t num) {
 		buf[2] = 0x01 | 0x80 | 0x08;
 		buf[3] = 0xf0 | 0x0f;
 		break;
-	}	
+	}
 }

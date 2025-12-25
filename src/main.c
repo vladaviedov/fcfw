@@ -1,7 +1,7 @@
 /**
  * @file main.c
  * @author Vladyslav Aviedov <vladaviedov at protonmail dot com>
- * @version dev
+ * @version 1.0.0
  * @date 2025
  * @license GPLv3.0
  */
@@ -12,8 +12,8 @@
 #include "io.h"
 #include "meas.h"
 #include "pins.h"
-#include "util.h"
 #include "ssd1306.h"
+#include "util.h"
 
 static volatile uint8_t trig_flag = 0;
 static volatile uint8_t hold_btn_flag = 0;

@@ -1,7 +1,7 @@
 /**
  * @file pins.h
  * @author Vladyslav Aviedov <vladaviedov at protonmail dot com>
- * @version dev
+ * @version 1.0.0
  * @date 2025
  * @license GPLv3.0
  * @brief Frequency counter MCU pinout.
