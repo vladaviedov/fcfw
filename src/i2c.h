@@ -12,6 +12,11 @@
 
 #include "util.h"
 
+// Setup address byte with write flag
+#define i2c_addr_wr(x) (((x) << 1) | 0)
+// Setup address byte with read flag
+#define i2c_addr_rd(x) (((x) << 1) | 1)
+
 /**
  * @brief Send I2C start instruction.
  */
