@@ -95,5 +95,6 @@ uint32_t meas_load(void) {
 	correction = data & 0b11;
 	fresh = 1;
 
+	// NOTE: needs to consider gate time setting in future versions
 	return fresh_old ? result : 0;
 }
